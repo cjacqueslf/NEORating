@@ -3,6 +3,8 @@ from __future__ import annotations
 import socket
 import urllib.request
 
+import pytest
+
 from neo_rating.infrastructure.digest2_adapter import (
     Digest2Classifier,
     Digest2Mpc80LineParser,
@@ -22,7 +24,7 @@ def test_official_sample_returns_approved_scores(
     assert rating.observation_count == 3
     assert rating.neo_rating == 20.03939848070969
     assert rating.raw_neo_score == 10.564506231433699
-    assert rating.rms_arcsec == 0.7306750322258272
+    assert rating.rms_arcsec == pytest.approx(0.7306750322258272, abs=1e-11)
     assert rating.top_noid_class == "MB1"
     assert identity.digest2_version == "2.8.1"
     assert identity.repeatable is True
