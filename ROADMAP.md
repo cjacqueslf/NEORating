@@ -144,7 +144,7 @@ Portão:
 
 ## Fase 6 — Qualidade e validação
 
-**Estado:** pendente.
+**Estado:** em andamento.
 
 Objetivos:
 
@@ -156,6 +156,8 @@ Objetivos:
 - validar ausência de rede;
 - revisar logs e privacidade;
 - executar análise estática aplicável.
+- validar o canal automático de atualização sem depender de rede nos testes;
+- rejeitar manifesto, tamanho ou hash incompatível;
 
 Portão:
 
@@ -176,6 +178,8 @@ Objetivos:
 - testar em Windows limpo e offline;
 - gerar hashes do produto;
 - publicar notas e limitações da versão 0.1.0.
+- empacotar o helper externo de instalação atômica e rollback;
+- publicar manifesto e pacote no canal público de releases;
 
 Portão:
 

@@ -345,3 +345,19 @@ Não são decisões da Fase 2:
 - distribuição pública ou interna.
 
 Esses pontos não alteram o núcleo da versão 0.1.0.
+
+## 13. Atualização automática controlada
+
+O código-fonte permanece em repositório privado. Releases binárias e seus
+manifestos são publicadas em `cjacqueslf/NEORating-Releases`, que não contém
+código-fonte nem dados do usuário.
+
+O fluxo de atualização depende de `UpdateSource` e `UpdateStager`, implementados
+na infraestrutura. A apresentação dispara `CheckAndStageUpdate` em worker
+separado após abrir a janela. Indisponibilidade de rede é silenciosamente
+degradada e nunca altera o estado do cálculo.
+
+O pacote é aceito somente após correspondência entre tag, manifesto e asset,
+limite de tamanho e SHA-256 integral. O staging usa arquivo temporário e
+substituição atômica. Instalação e rollback serão executados por helper externo
+depois que o layout final do pacote Windows for definido na Fase 7.

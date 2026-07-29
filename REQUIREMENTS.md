@@ -14,8 +14,9 @@ científico do Digest2.
 
 - Uso profissional em busca e acompanhamento de objetos próximos da Terra.
 - Execução em Windows de 64 bits.
-- Operação local, sem serviço em nuvem, telemetria ou dependência de rede.
-- Interface e mensagens inicialmente em português do Brasil.
+- Cálculo local sem serviço em nuvem, telemetria ou dependência de rede.
+- A rede é opcional e usada somente pelo atualizador controlado.
+- Interface e mensagens em inglês.
 
 ## 3. Definição do resultado principal
 
@@ -129,10 +130,12 @@ cálculo bem-sucedido.
 A aplicação deve informar claramente quando qualquer arquivo científico estiver
 ausente, ilegível, incompatível ou com hash diferente do conjunto homologado.
 
-### RF-012 — Operação offline
+### RF-012 — Operação offline e atualização controlada
 
-Inicialização e cálculo devem funcionar com acesso à rede indisponível. Nenhuma
-tentativa de atualização ou download deve ocorrer automaticamente.
+Inicialização e cálculo devem funcionar com acesso à rede indisponível. Quando
+houver rede, um worker separado deve verificar automaticamente o canal público
+homologado, validar manifesto, tamanho e SHA-256 e preparar a atualização sem
+bloquear a interface. Falhas do atualizador não podem impedir cálculos.
 
 ## 5. Requisitos não funcionais
 
@@ -192,7 +195,7 @@ instalado e sem compilador C.
 - ADES XML como entrada de usuário;
 - importação de arquivos;
 - banco de dados ou histórico permanente;
-- atualização automática;
+- atualização direta de arquivos científicos sem uma release homologada;
 - acesso ao NEOCP;
 - submissão de observações ao MPC;
 - filtros adicionais `NEOCP_filters`;
@@ -201,7 +204,7 @@ instalado e sem compilador C.
 - edição assistida de linhas MPC80;
 - determinação orbital;
 - suporte oficial a outros sistemas operacionais;
-- temas ou personalização extensiva;
+- personalização extensiva de temas;
 - processamento automatizado de diretórios.
 
 ## 7. Dados científicos homologados inicialmente

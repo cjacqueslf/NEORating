@@ -24,7 +24,9 @@ No PowerShell, a partir de `D:\NEORating`:
 ```
 
 O cálculo utiliza somente os arquivos homologados em
-`resources\scientific`. Nenhum download automático é realizado.
+`resources\scientific`. A verificação de atualizações ocorre em segundo plano e
+não é necessária para inicializar ou calcular offline. Downloads aceitos são
+validados e preparados em staging; consulte `UPDATE_POLICY.md`.
 
 ## Testes
 
@@ -38,4 +40,3 @@ O NEO Rating corresponde a `ClassificationResult.noid.NEO`. É uma
 pseudo-probabilidade de classificação de órbitas compatíveis com uma tracklet
 curta. Não confirma que o objeto seja um NEO e não substitui determinação
 orbital ou avaliação profissional.
-

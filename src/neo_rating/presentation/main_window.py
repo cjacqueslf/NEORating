@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 from uuid import uuid4
 
-from PySide6.QtCore import Qt, QThreadPool, Slot
+from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot
 from PySide6.QtGui import QCloseEvent, QFontDatabase, QGuiApplication
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
 )
 
 from neo_rating.application.use_cases import CalculateNeoRating
+from neo_rating.application.update_use_cases import CheckAndStageUpdate
 from neo_rating import __version__
 from neo_rating.domain.models import (
     CalculateNeoRatingRequest,
@@ -36,7 +37,8 @@ from neo_rating.domain.models import (
     ScientificIdentity,
     TrackletRating,
 )
-from neo_rating.presentation.worker import CalculationWorker
+from neo_rating.domain.updates import UpdateResult, UpdateStatus
+from neo_rating.presentation.worker import CalculationWorker, UpdateWorker
 
 
 class WindowState(StrEnum):
@@ -53,11 +55,14 @@ class MainWindow(QMainWindow):
         use_case: CalculateNeoRating,
         *,
         thread_pool: QThreadPool | None = None,
+        update_use_case: CheckAndStageUpdate | None = None,
     ) -> None:
         super().__init__()
         self._use_case = use_case
         self._thread_pool = thread_pool or QThreadPool.globalInstance()
         self._active_worker: CalculationWorker | None = None
+        self._update_use_case = update_use_case
+        self._update_worker: UpdateWorker | None = None
         self._ratings: tuple[TrackletRating, ...] = ()
         self._scientific_identity: ScientificIdentity | None = None
         self._state = WindowState.EMPTY
@@ -70,6 +75,8 @@ class MainWindow(QMainWindow):
         self._apply_styles()
         self._clear_output()
         self._set_state(WindowState.EMPTY)
+        if self._update_use_case is not None:
+            QTimer.singleShot(0, self._start_update_check)
 
     @property
     def state(self) -> WindowState:
@@ -181,6 +188,26 @@ class MainWindow(QMainWindow):
         self.clear_button.clicked.connect(self._clear)
         self.copy_button.clicked.connect(self._copy_results)
         self.info_button.clicked.connect(self._show_information)
+
+    @Slot()
+    def _start_update_check(self) -> None:
+        if self._update_use_case is None or self._update_worker is not None:
+            return
+        worker = UpdateWorker(self._update_use_case)
+        worker.signals.completed.connect(self._update_check_completed)
+        self._update_worker = worker
+        self._thread_pool.start(worker)
+
+    @Slot(object)
+    def _update_check_completed(self, result: UpdateResult) -> None:
+        self._update_worker = None
+        if result.status is UpdateStatus.STAGED:
+            self.statusBar().showMessage(
+                self.tr(
+                    "Update {version} was downloaded and verified."
+                ).format(version=result.version),
+                10000,
+            )
 
     def _apply_styles(self) -> None:
         self.setStyleSheet(

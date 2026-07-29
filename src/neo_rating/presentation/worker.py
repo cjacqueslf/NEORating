@@ -5,6 +5,7 @@ from __future__ import annotations
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 
 from neo_rating.application.use_cases import CalculateNeoRating
+from neo_rating.application.update_use_cases import CheckAndStageUpdate
 from neo_rating.domain.models import CalculateNeoRatingRequest
 
 
@@ -33,3 +34,17 @@ class CalculationWorker(QRunnable):
             return
         self.signals.completed.emit(response)
 
+
+class UpdateSignals(QObject):
+    completed = Signal(object)
+
+
+class UpdateWorker(QRunnable):
+    def __init__(self, use_case: CheckAndStageUpdate) -> None:
+        super().__init__()
+        self.signals = UpdateSignals()
+        self._use_case = use_case
+
+    @Slot()
+    def run(self) -> None:
+        self.signals.completed.emit(self._use_case.execute())

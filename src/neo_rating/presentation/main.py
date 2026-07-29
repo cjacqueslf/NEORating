@@ -8,7 +8,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QApplication
 
-from neo_rating.presentation.composition import build_calculate_neo_rating
+from neo_rating.presentation.composition import (
+    build_calculate_neo_rating,
+    build_update_service,
+)
 from neo_rating.presentation.main_window import MainWindow
 
 
@@ -38,7 +41,10 @@ def main() -> int:
     application.setStyle("Fusion")
     _apply_dark_palette(application)
 
-    window = MainWindow(build_calculate_neo_rating())
+    window = MainWindow(
+        build_calculate_neo_rating(),
+        update_use_case=build_update_service(),
+    )
     window.show()
     return application.exec()
 
