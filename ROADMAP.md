@@ -167,7 +167,7 @@ Portão:
 
 ## Fase 7 — Empacotamento e lançamento
 
-**Estado:** pendente.
+**Estado:** em andamento.
 
 Objetivos:
 
@@ -180,6 +180,14 @@ Objetivos:
 - publicar notas e limitações da versão 0.1.0.
 - empacotar o helper externo de instalação atômica e rollback;
 - publicar manifesto e pacote no canal público de releases;
+
+Resultados parciais:
+
+- PyInstaller 6.21.0 selecionado e fixado;
+- configuração `onedir` reproduzível criada para Windows x64;
+- runtime, extensão nativa Digest2 e arquivos científicos incorporados;
+- hashes científicos preservados no pacote;
+- modo interno `--verify-package` criado para validar o cálculo empacotado;
 
 Portão:
 

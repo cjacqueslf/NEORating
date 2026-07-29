@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 from neo_rating.application.use_cases import CalculateNeoRating
 from neo_rating.application.update_use_cases import CheckAndStageUpdate
@@ -38,5 +39,8 @@ def build_update_service() -> CheckAndStageUpdate:
 
 
 def _default_scientific_directory() -> Path:
+    if getattr(sys, "frozen", False):
+        bundle_root = Path(getattr(sys, "_MEIPASS"))
+        return bundle_root / "resources" / "scientific"
     project_root = Path(__file__).resolve().parents[3]
     return project_root / "resources" / "scientific"

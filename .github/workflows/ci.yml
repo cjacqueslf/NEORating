@@ -27,3 +27,17 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: python -m pytest -q
+      - name: Build portable package
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File packaging\build_portable.ps1
+      - name: Verify packaged Digest2 calculation
+        shell: powershell
+        run: |
+          $process = Start-Process `
+            -FilePath "dist\NEORating-0.1.0-portable\NEORating.exe" `
+            -ArgumentList "--verify-package" `
+            -PassThru `
+            -Wait
+          if ($process.ExitCode -ne 0) {
+            throw "Package verification failed with exit code $($process.ExitCode)."
+          }
