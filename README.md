@@ -46,10 +46,18 @@ powershell -ExecutionPolicy Bypass -File packaging\build_portable.ps1
 Os resultados ficam em `dist\NEORating-0.1.0-portable` e
 `dist\NEORating-0.1.0-windows-x64.zip`. O executável inclui o runtime Python,
 PySide6, Digest2 2.8.1 e os arquivos científicos homologados.
+Com o NSIS 3.12 instalado, o mesmo comando também produz
+`dist\NEORating-0.1.0-Setup.exe` e `dist\neo-rating-update.json`.
 Para verificar silenciosamente o pacote completo:
 
 ```powershell
 dist\NEORating-0.1.0-portable\NEORating.exe --verify-package
+```
+
+Para testar instalação, cálculo e desinstalação em um diretório temporário:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File packaging\test_installer.ps1
 ```
 
 ## Aviso científico

@@ -10,7 +10,9 @@ scientific_data = project_root / "resources" / "scientific"
 
 datas = [
     (str(scientific_data), "resources/scientific"),
+    (str(project_root / "licenses"), "licenses"),
     (str(project_root / "README.md"), "."),
+    (str(project_root / "THIRD_PARTY_NOTICES.md"), "."),
     (str(project_root / "UPDATE_POLICY.md"), "."),
 ]
 datas += copy_metadata("digest2")

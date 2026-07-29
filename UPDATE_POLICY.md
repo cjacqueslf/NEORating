@@ -47,9 +47,9 @@ downloads are removed.
 ## Installation boundary
 
 Version 0.1.0 implements automatic discovery, download, verification and
-staging. Atomic installation and rollback require the packaged Windows layout
-and the external updater helper delivered during the packaging phase. The GUI
-must not claim that installation has completed until that helper confirms it.
+staging. The Windows installer and packaged layout exist, but atomic invocation
+and rollback still require the external updater helper. The GUI must not claim
+that installation has completed until that helper confirms it.
 
 Scientific updates are distributed only as a complete tested NEO Rating
 release. Runtime code never downloads individual model or configuration files

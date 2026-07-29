@@ -47,3 +47,45 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 Get-FileHash -Algorithm SHA256 -LiteralPath $executable
 Get-FileHash -Algorithm SHA256 -LiteralPath $archive
+
+$compilerCandidates = @(
+    (Join-Path ${env:ProgramFiles(x86)} "NSIS\makensis.exe"),
+    (Join-Path $env:ProgramFiles "NSIS\makensis.exe")
+)
+$compiler = $compilerCandidates |
+    Where-Object { $_ -and (Test-Path -LiteralPath $_) } |
+    Select-Object -First 1
+if (-not $compiler) {
+    throw "NSIS 3.12 compiler was not found."
+}
+
+$installerScript = Join-Path $PSScriptRoot "installer.nsi"
+& $compiler `
+    "/DPORTABLE_DIR=$distribution" `
+    "/DOUTPUT_DIR=$(Join-Path $projectRoot 'dist')" `
+    $installerScript
+if ($LASTEXITCODE -ne 0) {
+    throw "NSIS failed with exit code $LASTEXITCODE."
+}
+
+$installer = Join-Path $projectRoot "dist\NEORating-0.1.0-Setup.exe"
+$installerHash = Get-FileHash -Algorithm SHA256 -LiteralPath $installer
+$installerInfo = Get-Item -LiteralPath $installer
+$updateManifest = [ordered]@{
+    schema_version = 1
+    version = "0.1.0"
+    digest2_version = "2.8.1"
+    asset_name = $installerInfo.Name
+    asset_size = $installerInfo.Length
+    asset_sha256 = $installerHash.Hash.ToLowerInvariant()
+}
+$manifestPath = Join-Path $projectRoot "dist\neo-rating-update.json"
+$manifestJson = $updateManifest | ConvertTo-Json
+[IO.File]::WriteAllText(
+    $manifestPath,
+    $manifestJson + [Environment]::NewLine,
+    [Text.UTF8Encoding]::new($false)
+)
+
+$installerHash
+Get-FileHash -Algorithm SHA256 -LiteralPath $manifestPath

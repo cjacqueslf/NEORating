@@ -188,6 +188,11 @@ Resultados parciais:
 - runtime, extensão nativa Digest2 e arquivos científicos incorporados;
 - hashes científicos preservados no pacote;
 - modo interno `--verify-package` criado para validar o cálculo empacotado;
+- NSIS 3.12 selecionado para evitar obrigação de licença comercial da
+  ferramenta de instalação;
+- instalador por usuário com atalhos e desinstalação criado;
+- manifesto de atualização com tamanho e SHA-256 gerado automaticamente;
+- ciclo de instalação, cálculo e desinstalação validado localmente;
 
 Portão:
 
