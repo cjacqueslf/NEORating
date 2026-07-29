@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neo-rating"
+version = "0.1.0"
+description = "Offline Windows desktop integration with the official MPC Digest2 classifier"
+requires-python = "==3.12.*"
+dependencies = [
+    "digest2==2.8.1",
+    "PySide6==6.11.1",
+]
+
+[project.scripts]
+neo-rating = "neo_rating.presentation.main:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]

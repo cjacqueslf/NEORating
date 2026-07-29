@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "digest2_version": "2.8.1",
+  "repeatable": true,
+  "files": {
+    "digest2.model.csv": {
+      "sha256": "2b9d9d2a6d8ab16d3a2dbb835b30d3aa172431f27c3cb7c159675d7686668c45"
+    },
+    "digest2.model": {
+      "sha256": "77a7ce32d15f6e363d5dca03bba87916302c29f76d499ca4e70f655a2356e9f8",
+      "derived_from": "digest2.model.csv",
+      "platform": "Windows x64"
+    },
+    "MPC.config": {
+      "sha256": "5c623453f790db741a924f08a75d451385c15cde4be479660d480cbd2c7d2121"
+    },
+    "digest2.obscodes": {
+      "sha256": "c64569ee2d9d58da6c1ca032f484bdd2188c869be56f0ef077cb624c3dfb9406"
+    }
+  }
+}
