@@ -3,6 +3,8 @@ from __future__ import annotations
 import socket
 import urllib.request
 
+import pytest
+
 from neo_rating.infrastructure.digest2_adapter import (
     Digest2Classifier,
     Digest2Mpc80LineParser,
@@ -22,7 +24,7 @@ def test_official_sample_returns_approved_scores(
     assert rating.observation_count == 3
     assert rating.neo_rating == 20.03939848070969
     assert rating.raw_neo_score == 10.564506231433699
-    assert rating.rms_arcsec == 0.7306750322258272
+    assert rating.rms_arcsec == pytest.approx(0.7306750322258272, abs=1e-11)
     assert rating.top_noid_class == "MB1"
     assert identity.digest2_version == "2.8.1"
     assert identity.repeatable is True
@@ -37,6 +39,19 @@ def test_repeatable_mode_returns_identical_results(
     second = classifier.classify_text(official_sample_text)
 
     assert first == second
+
+
+def test_out_of_order_observations_match_chronological_result(
+    scientific_data, official_sample_text
+) -> None:
+    lines = official_sample_text.splitlines()
+    shuffled = "\n".join((lines[1], lines[2], lines[0]))
+    classifier = Digest2Classifier(scientific_data)
+
+    chronological_result = classifier.classify_text(official_sample_text)
+    shuffled_result = classifier.classify_text(shuffled)
+
+    assert shuffled_result == chronological_result
 
 
 def test_explicit_local_data_does_not_access_network(

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Protocol
 
 from neo_rating.domain.models import InputProblem, ScientificIdentity, TrackletRating
+from neo_rating.domain.updates import UpdateCandidate
 
 
 class ClassificationError(RuntimeError):
@@ -45,3 +47,13 @@ class Mpc80LineParser(Protocol):
 class InputValidator(Protocol):
     def validate(self, source_text: str) -> tuple[InputProblem, ...]:
         """Return every problem found without changing the source."""
+
+
+class UpdateSource(Protocol):
+    def latest_candidate(self) -> UpdateCandidate | None:
+        """Return the latest approved release candidate, if one exists."""
+
+
+class UpdateStager(Protocol):
+    def stage(self, candidate: UpdateCandidate) -> Path:
+        """Download and atomically stage a verified release asset."""

@@ -144,7 +144,7 @@ Portão:
 
 ## Fase 6 — Qualidade e validação
 
-**Estado:** pendente.
+**Estado:** em andamento.
 
 Objetivos:
 
@@ -156,6 +156,8 @@ Objetivos:
 - validar ausência de rede;
 - revisar logs e privacidade;
 - executar análise estática aplicável.
+- validar o canal automático de atualização sem depender de rede nos testes;
+- rejeitar manifesto, tamanho ou hash incompatível;
 
 Portão:
 
@@ -165,7 +167,7 @@ Portão:
 
 ## Fase 7 — Empacotamento e lançamento
 
-**Estado:** pendente.
+**Estado:** em andamento.
 
 Objetivos:
 
@@ -176,6 +178,21 @@ Objetivos:
 - testar em Windows limpo e offline;
 - gerar hashes do produto;
 - publicar notas e limitações da versão 0.1.0.
+- empacotar o helper externo de instalação atômica e rollback;
+- publicar manifesto e pacote no canal público de releases;
+
+Resultados parciais:
+
+- PyInstaller 6.21.0 selecionado e fixado;
+- configuração `onedir` reproduzível criada para Windows x64;
+- runtime, extensão nativa Digest2 e arquivos científicos incorporados;
+- hashes científicos preservados no pacote;
+- modo interno `--verify-package` criado para validar o cálculo empacotado;
+- NSIS 3.12 selecionado para evitar obrigação de licença comercial da
+  ferramenta de instalação;
+- instalador por usuário com atalhos e desinstalação criado;
+- manifesto de atualização com tamanho e SHA-256 gerado automaticamente;
+- ciclo de instalação, cálculo e desinstalação validado localmente;
 
 Portão:
 

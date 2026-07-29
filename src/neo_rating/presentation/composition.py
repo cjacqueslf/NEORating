@@ -3,14 +3,22 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 from neo_rating.application.use_cases import CalculateNeoRating
+from neo_rating.application.update_use_cases import CheckAndStageUpdate
 from neo_rating.application.validation import Mpc80EnvelopeValidator
 from neo_rating.infrastructure.digest2_adapter import (
     Digest2Classifier,
     Digest2Mpc80LineParser,
 )
 from neo_rating.infrastructure.scientific_data import ScientificDataBundle
+from neo_rating.infrastructure.github_updates import (
+    GitHubReleaseUpdateSource,
+    VerifiedUpdateStager,
+    default_update_directory,
+)
+from neo_rating import __version__
 
 
 def build_calculate_neo_rating(
@@ -22,7 +30,17 @@ def build_calculate_neo_rating(
     return CalculateNeoRating(classifier, validator)
 
 
+def build_update_service() -> CheckAndStageUpdate:
+    return CheckAndStageUpdate(
+        GitHubReleaseUpdateSource(),
+        VerifiedUpdateStager(default_update_directory()),
+        current_version=__version__,
+    )
+
+
 def _default_scientific_directory() -> Path:
+    if getattr(sys, "frozen", False):
+        bundle_root = Path(getattr(sys, "_MEIPASS"))
+        return bundle_root / "resources" / "scientific"
     project_root = Path(__file__).resolve().parents[3]
     return project_root / "resources" / "scientific"
-

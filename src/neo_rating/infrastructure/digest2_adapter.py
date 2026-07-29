@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from importlib.metadata import PackageNotFoundError, version
+from operator import attrgetter
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -50,6 +51,8 @@ class Digest2Classifier:
                 temporary_path = Path(temporary.name)
             parsed = parse_mpc80_file(str(temporary_path))
             tracklets: OrderedDict[str, list[object]] = OrderedDict(parsed.items())
+            for observations in tracklets.values():
+                observations.sort(key=attrgetter("mjd"))
         except Exception as exc:
             raise Digest2ClassificationError("MPC80 parsing failed") from exc
         finally:
