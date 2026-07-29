@@ -41,6 +41,19 @@ def test_repeatable_mode_returns_identical_results(
     assert first == second
 
 
+def test_out_of_order_observations_match_chronological_result(
+    scientific_data, official_sample_text
+) -> None:
+    lines = official_sample_text.splitlines()
+    shuffled = "\n".join((lines[1], lines[2], lines[0]))
+    classifier = Digest2Classifier(scientific_data)
+
+    chronological_result = classifier.classify_text(official_sample_text)
+    shuffled_result = classifier.classify_text(shuffled)
+
+    assert shuffled_result == chronological_result
+
+
 def test_explicit_local_data_does_not_access_network(
     monkeypatch, scientific_data, official_sample_text
 ) -> None:
