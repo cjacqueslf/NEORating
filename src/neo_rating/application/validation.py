@@ -15,6 +15,24 @@ _MAIN_TYPES = frozenset(("C", "S", "B"))
 _AUXILIARY_TYPES = frozenset(("s", "v"))
 
 
+def normalize_mpc80_padding(source_text: str) -> tuple[str, tuple[InputProblem, ...]]:
+    """Ignore only ASCII padding beyond column 80, preserving the original input."""
+    lines: list[str] = []
+    problems: list[InputProblem] = []
+    for number, original in enumerate(source_text.splitlines(keepends=True), start=1):
+        line = original.rstrip("\r\n")
+        ending = original[len(line):]
+        if len(line) > 80 and not line[80:].strip(" \t"):
+            lines.append(line[:80] + ending)
+            problems.append(_problem(
+                "LINE_TRAILING_PADDING", "warning.line_trailing_padding", number,
+                severity=ProblemSeverity.WARNING,
+            ))
+        else:
+            lines.append(original)
+    return "".join(lines), tuple(problems)
+
+
 @dataclass(slots=True)
 class _TrackletState:
     first_line: int

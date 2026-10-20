@@ -5,6 +5,10 @@ import urllib.request
 
 import pytest
 
+from neo_rating.application.use_cases import CalculateNeoRating
+from neo_rating.application.validation import Mpc80EnvelopeValidator
+from neo_rating.domain.models import CalculateNeoRatingRequest, ResponseStatus
+
 from neo_rating.infrastructure.digest2_adapter import (
     Digest2Classifier,
     Digest2Mpc80LineParser,
@@ -28,6 +32,36 @@ def test_official_sample_returns_approved_scores(
     assert rating.top_noid_class == "MB1"
     assert identity.digest2_version == "2.8.1"
     assert identity.repeatable is True
+
+
+def test_pasted_trailing_padding_keeps_official_scores(
+    scientific_data, official_sample_text,
+) -> None:
+    classifier = Digest2Classifier(scientific_data)
+    use_case = CalculateNeoRating(classifier, Mpc80EnvelopeValidator(Digest2Mpc80LineParser()))
+    request = CalculateNeoRatingRequest(
+        source_text=official_sample_text + " \t   ", correlation_id="pasted-padding",
+    )
+    response = use_case.execute(request)
+    assert response.status is ResponseStatus.SUCCESS
+    assert response.ratings == classifier.classify_text(official_sample_text)[0]
+    assert [(p.code, p.line_number) for p in response.problems] == [("LINE_TRAILING_PADDING", 3)]
+    assert request.source_text.endswith(" \t   ")
+
+
+def test_real_content_after_column_80_still_blocks_calculation(
+    official_sample_text,
+) -> None:
+    class MustNotClassify:
+        def classify_text(self, source_text):
+            raise AssertionError("Invalid observations must not reach Digest2")
+
+    use_case = CalculateNeoRating(MustNotClassify(), Mpc80EnvelopeValidator(Digest2Mpc80LineParser()))
+    response = use_case.execute(CalculateNeoRatingRequest(
+        source_text=official_sample_text + " invalid", correlation_id="extra-content",
+    ))
+    assert response.status is ResponseStatus.VALIDATION_ERROR
+    assert any(p.code == "LINE_TOO_LONG" and p.line_number == 3 for p in response.problems)
 
 
 def test_repeatable_mode_returns_identical_results(

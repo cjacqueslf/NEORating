@@ -478,8 +478,13 @@ class MainWindow(QMainWindow):
         messages = {
             "error.input_empty": self.tr("Paste observations before calculating."),
             "warning.line_empty": self.tr("The line is empty and was ignored."),
+            "warning.line_trailing_padding": self.tr(
+                "Extra spaces or tabs after column 80 were ignored; observation columns were preserved."
+            ),
             "error.line_too_short": self.tr("The line has fewer than 80 characters."),
-            "error.line_too_long": self.tr("The line has more than 80 characters."),
+            "error.line_too_long": self.tr(
+                "The line has more than 80 characters. Check extra text or shifted fields; the observatory code must be in columns 78–80."
+            ),
             "error.line_non_ascii": self.tr("The line contains non-ASCII characters."),
             "error.line_unsupported": self.tr(
                 "The observation type is not supported."

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from neo_rating.application.validation import Mpc80EnvelopeValidator
+from neo_rating.application.validation import Mpc80EnvelopeValidator, normalize_mpc80_padding
 from neo_rating.domain.models import ProblemSeverity
 from neo_rating.infrastructure.digest2_adapter import Digest2Mpc80LineParser
 
@@ -22,6 +22,28 @@ def test_short_and_long_lines_are_rejected(official_sample_text: str) -> None:
 
     assert "LINE_TOO_SHORT" in _codes(line[:-1])
     assert "LINE_TOO_LONG" in _codes(line + " ")
+
+
+def test_padding_normalization_preserves_columns_endings_and_line_numbers(
+    official_sample_text: str,
+) -> None:
+    lines = official_sample_text.splitlines()
+    original = lines[0] + "\r\n\r\n" + lines[1] + "\r\n" + lines[2] + " \t  "
+    normalized, problems = normalize_mpc80_padding(original)
+    assert normalized == lines[0] + "\r\n\r\n" + lines[1] + "\r\n" + lines[2]
+    assert original.endswith(" \t  ")
+    assert [(p.code, p.line_number, p.severity) for p in problems] == [
+        ("LINE_TRAILING_PADDING", 4, ProblemSeverity.WARNING)
+    ]
+
+
+def test_normalization_does_not_hide_real_input_errors(official_sample_text: str) -> None:
+    line = official_sample_text.splitlines()[0]
+    for original in (line[:-1], line + " extra", line + "\u00a0", " " + line):
+        normalized, problems = normalize_mpc80_padding(original)
+        assert normalized == original
+        assert problems == ()
+        assert _codes(normalized)
 
 
 def test_non_ascii_line_is_rejected(official_sample_text: str) -> None:

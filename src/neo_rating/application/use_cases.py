@@ -17,6 +17,7 @@ from neo_rating.domain.models import (
     ProblemSeverity,
     ResponseStatus,
 )
+from neo_rating.application.validation import normalize_mpc80_padding
 
 
 class CalculateNeoRating:
@@ -35,8 +36,9 @@ class CalculateNeoRating:
                 message_key="error.input_empty",
             )
 
+        source_text, padding_problems = normalize_mpc80_padding(request.source_text)
         try:
-            problems = self._validator.validate(request.source_text)
+            problems = padding_problems + self._validator.validate(source_text)
         except Digest2InitializationError as exc:
             return self._failure(
                 request,
@@ -54,7 +56,7 @@ class CalculateNeoRating:
             )
 
         try:
-            ratings, identity = self._classifier.classify_text(request.source_text)
+            ratings, identity = self._classifier.classify_text(source_text)
         except ScientificDataMissingError as exc:
             return self._failure(
                 request,

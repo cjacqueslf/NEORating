@@ -124,7 +124,11 @@ O aplicativo não duplicará toda a gramática MPC80. Quando o parser oficial
 rejeitar uma linha, a mensagem indicará que ela não é uma observação MPC80
 aceita, preservando o número da linha e um trecho não sensível para diagnóstico.
 
-Linhas com menos ou mais de 80 caracteres são rejeitadas e nunca truncadas.
+Linhas com menos de 80 caracteres ou conteúdo além da coluna 80 são rejeitadas
+e nunca truncadas. O caso de uso ignora somente espaços ASCII e tabulações
+excedentes após a coluna 80, em uma cópia para processamento, com aviso por
+linha. As primeiras 80 colunas e a entrada original permanecem intactas;
+validação e classificação recebem a mesma cópia normalizada.
 Linhas em branco internas são aceitas como aviso não bloqueante. Caracteres
 fora de ASCII, campos fixos inválidos, linhas auxiliares órfãs e ordem temporal
 regressiva são erros bloqueantes.

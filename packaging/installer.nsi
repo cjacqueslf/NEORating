@@ -1,4 +1,4 @@
-Unicode True
+﻿Unicode True
 ManifestDPIAware True
 
 !include "MUI2.nsh"
@@ -10,16 +10,21 @@ ManifestDPIAware True
   !error "OUTPUT_DIR must point to the installer output directory."
 !endif
 
-!define APP_NAME "NEO Rating"
+!ifndef APP_NAME
+  !define APP_NAME "NEO Rating"
+!endif
+!ifndef APP_ID
+  !define APP_ID "NEORating"
+!endif
 !define APP_VERSION "0.1.0"
 !define APP_PUBLISHER "NEO Rating"
 !define APP_EXE "NEORating.exe"
-!define APP_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\NEORating"
+!define APP_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_ID}"
 
 Name "${APP_NAME}"
 OutFile "${OUTPUT_DIR}\NEORating-${APP_VERSION}-Setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\NEORating"
-InstallDirRegKey HKCU "Software\NEORating" "InstallLocation"
+InstallDirRegKey HKCU "Software\${APP_ID}" "InstallLocation"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 SetCompressorDictSize 64
@@ -37,7 +42,7 @@ VIAddVersionKey /LANG=1033 "FileVersion" "${APP_VERSION}"
 
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${APP_EXE}"
-!define MUI_FINISHPAGE_RUN_TEXT "Run NEO Rating"
+!define MUI_FINISHPAGE_RUN_TEXT "Abrir NEO Rating"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
@@ -48,15 +53,16 @@ VIAddVersionKey /LANG=1033 "FileVersion" "${APP_VERSION}"
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
-!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "PortugueseBR"
 
 Section "NEO Rating" SEC_MAIN
   SectionIn RO
+  SetShellVarContext current
   SetOutPath "$INSTDIR"
   File /r "${PORTABLE_DIR}\*.*"
 
   WriteUninstaller "$INSTDIR\Uninstall.exe"
-  WriteRegStr HKCU "Software\NEORating" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKCU "Software\${APP_ID}" "InstallLocation" "$INSTDIR"
   WriteRegStr HKCU "${APP_REG_KEY}" "DisplayName" "${APP_NAME}"
   WriteRegStr HKCU "${APP_REG_KEY}" "DisplayVersion" "${APP_VERSION}"
   WriteRegStr HKCU "${APP_REG_KEY}" "Publisher" "${APP_PUBLISHER}"
@@ -67,23 +73,24 @@ Section "NEO Rating" SEC_MAIN
   WriteRegDWORD HKCU "${APP_REG_KEY}" "NoModify" 1
   WriteRegDWORD HKCU "${APP_REG_KEY}" "NoRepair" 1
 
-  CreateDirectory "$SMPROGRAMS\NEO Rating"
-  CreateShortcut "$SMPROGRAMS\NEO Rating\NEO Rating.lnk" "$INSTDIR\${APP_EXE}"
-  CreateShortcut "$SMPROGRAMS\NEO Rating\Uninstall NEO Rating.lnk" "$INSTDIR\Uninstall.exe"
+  CreateDirectory "$SMPROGRAMS\${APP_NAME}"
+  CreateShortcut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}"
+  CreateShortcut "$SMPROGRAMS\${APP_NAME}\Uninstall ${APP_NAME}.lnk" "$INSTDIR\Uninstall.exe"
 SectionEnd
 
-Section "Desktop shortcut" SEC_DESKTOP
-  CreateShortcut "$DESKTOP\NEO Rating.lnk" "$INSTDIR\${APP_EXE}"
+Section "Atalho na área de trabalho" SEC_DESKTOP
+  CreateShortcut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}"
 SectionEnd
 
 Section "Uninstall"
-  Delete "$DESKTOP\NEO Rating.lnk"
-  Delete "$SMPROGRAMS\NEO Rating\NEO Rating.lnk"
-  Delete "$SMPROGRAMS\NEO Rating\Uninstall NEO Rating.lnk"
-  RMDir "$SMPROGRAMS\NEO Rating"
+  SetShellVarContext current
+  Delete "$DESKTOP\${APP_NAME}.lnk"
+  Delete "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk"
+  Delete "$SMPROGRAMS\${APP_NAME}\Uninstall ${APP_NAME}.lnk"
+  RMDir "$SMPROGRAMS\${APP_NAME}"
 
   DeleteRegKey HKCU "${APP_REG_KEY}"
-  DeleteRegKey HKCU "Software\NEORating"
+  DeleteRegKey HKCU "Software\${APP_ID}"
 
   RMDir /r "$INSTDIR"
 SectionEnd

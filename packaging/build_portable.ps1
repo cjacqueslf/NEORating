@@ -89,3 +89,13 @@ $manifestJson = $updateManifest | ConvertTo-Json
 
 $installerHash
 Get-FileHash -Algorithm SHA256 -LiteralPath $manifestPath
+
+$checksumLines = @($installer, $archive, $manifestPath) | ForEach-Object {
+    $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $_
+    "{0}  {1}" -f $hash.Hash.ToLowerInvariant(), (Split-Path -Leaf $_)
+}
+[IO.File]::WriteAllLines(
+    (Join-Path $projectRoot "dist\SHA256SUMS.txt"),
+    [string[]]$checksumLines,
+    [Text.UTF8Encoding]::new($false)
+)
