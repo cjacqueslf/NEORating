@@ -31,6 +31,14 @@ analysis = Analysis(
     optimize=0,
 )
 
+# Windows 10/11 supply ICU and API sets. DLLs found on unrelated tools' PATH
+# can expose incompatible ICU symbols and prevent QtCore from loading.
+analysis.binaries = [
+    entry for entry in analysis.binaries
+    if Path(entry[0]).name.lower() not in {"icuuc.dll", "icuin.dll", "icudt78.dll", "ucrtbase.dll"}
+    and not Path(entry[0]).name.lower().startswith("api-ms-")
+]
+
 pyz = PYZ(analysis.pure)
 
 executable = EXE(
