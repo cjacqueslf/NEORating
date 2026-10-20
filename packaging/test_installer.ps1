@@ -53,12 +53,14 @@ try {
     }
 
     $shell = New-Object -ComObject WScript.Shell
+    $fileSystem = New-Object -ComObject Scripting.FileSystemObject
     foreach ($shortcutPath in @($desktopShortcut, (Join-Path $menuDirectory "$AppName.lnk"))) {
         if (-not (Test-Path -LiteralPath $shortcutPath)) {
             throw "Installer did not create shortcut: $shortcutPath"
         }
         $shortcut = $shell.CreateShortcut($shortcutPath)
-        if ($shortcut.TargetPath -ne $application) {
+        if (-not (Test-Path -LiteralPath $shortcut.TargetPath) -or
+            $fileSystem.GetFile($shortcut.TargetPath).ShortPath -ne $fileSystem.GetFile($application).ShortPath) {
             throw "Shortcut points to an incorrect application: $shortcutPath"
         }
     }
